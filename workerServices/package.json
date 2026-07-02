@@ -1,0 +1,23 @@
+{
+  "name": "worker-services",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start:complaint": "node index.complaint.js",
+    "start:notice": "node index.notice.js",
+    "dev:complaint": "nodemon index.complaint.js",
+    "dev:notice": "nodemon index.notice.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-sqs": "^3.540.0",
+    "dotenv": "^17.2.3",
+    "mongoose": "^9.1.5",
+    "nodemailer": "^7.0.12",
+    "p-limit": "^7.3.0",
+    "resend": "^6.16.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
