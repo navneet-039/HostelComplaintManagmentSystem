@@ -2,7 +2,7 @@ import axios from "axios";
 import { getStoredAccessToken, setStoredAccessToken } from "../context/authContext";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL,
+  baseURL: import.meta.env.VITE_BACKEND_URL || "http://localhost:8000",
   withCredentials: true,
 });
 

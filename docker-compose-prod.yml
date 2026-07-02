@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./Backend
+    container_name: hostelsync-backend-container
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./Backend/.env
+    depends_on:
+      - redis
+    networks:
+      - hostel-sync-network
+
+  notice-worker:
+    build: ./workerServices
+    container_name: hostelsync-notice-worker-container
+    command: npm run start:notice
+    env_file:
+      - ./workerServices/.env
+    depends_on:
+      - backend
+      - redis
+    networks:
+      - hostel-sync-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: hostelsync-redis-container
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - hostel-sync-network
+
+networks:
+  hostel-sync-network:
+    driver: bridge
