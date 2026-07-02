@@ -29,8 +29,6 @@ services:
     image: redis:7-alpine
     container_name: hostelsync-redis-container
     restart: unless-stopped
-    ports:
-      - "6379:6379"
     networks:
       - hostel-sync-network
 

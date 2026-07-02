@@ -1,0 +1,67 @@
+name: Deploy Backend to EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -e
+
+            cd ~/HostelComplaintManagmentSystem
+
+            git fetch origin
+            git reset --hard origin/main
+
+            cat > Backend/.env <<EOF
+            PORT=${{ secrets.PORT }}
+            MONGO_URI=${{ secrets.MONGO_URI }}
+            REDIS_HOST=${{ secrets.REDIS_HOST }}
+            REDIS_PORT=${{ secrets.REDIS_PORT }}
+            ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }}
+            REFRESH_TOKEN_SECRET=${{ secrets.REFRESH_TOKEN_SECRET }}
+            EMAIL_USER=${{ secrets.EMAIL_USER }}
+            EMAIL_PASS=${{ secrets.EMAIL_PASS }}
+            RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
+            AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
+            AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
+            AWS_REGION=${{ secrets.AWS_REGION }}
+            AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}
+            SQS_QUEUE_URL=${{ secrets.SQS_QUEUE_URL }}
+            EMAIL_SQS_QUEUE_URL=${{ secrets.EMAIL_SQS_QUEUE_URL }}
+            FRONTEND_URL=${{ secrets.FRONTEND_URL }}
+            EOF
+
+            cat > workerServices/.env <<EOF
+            PORT=${{ secrets.PORT }}
+            MONGO_URI=${{ secrets.MONGO_URI }}
+            ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }}
+            REFRESH_TOKEN_SECRET=${{ secrets.REFRESH_TOKEN_SECRET }}
+            EMAIL_USER=${{ secrets.EMAIL_USER }}
+            EMAIL_PASS=${{ secrets.EMAIL_PASS }}
+            RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
+            AWS_ACCESS_KEY=${{ secrets.AWS_ACCESS_KEY }}
+            AWS_SECRET_KEY=${{ secrets.AWS_SECRET_KEY }}
+            AWS_REGION=${{ secrets.AWS_REGION }}
+            AWS_BUCKET_NAME=${{ secrets.AWS_BUCKET_NAME }}
+            SQS_QUEUE_URL=${{ secrets.SQS_QUEUE_URL }}
+            EMAIL_SQS_QUEUE_URL=${{ secrets.EMAIL_SQS_QUEUE_URL }}
+            FRONTEND_URL=${{ secrets.FRONTEND_URL }}
+            EOF
+
+            docker compose -f docker-compose-prod.yml down || true
+
+            docker compose -f docker-compose-prod.yml up --build -d
+
+            docker image prune -af
