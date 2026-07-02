@@ -100,7 +100,7 @@ export const registerStudent = async (req, res) => {
     });
 
     // Send registration email
-    const resetLink = `http://localhost:5173/reset-password?email=${email}`;
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?email=${email}`;
 
     await pushEmailJob({
       type: "STUDENT_REGISTRATION",

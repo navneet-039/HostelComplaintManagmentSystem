@@ -36,8 +36,8 @@ export const loginController = async (req, res) => {
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "None",
     });
 
     return res.status(200).json({
@@ -224,8 +224,8 @@ export const logoutUser = async (req, res) => {
 
     res.clearCookie("refreshToken", {
       httpOnly: true,
-      secure: false,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "None",
     });
 
     res.status(200).json({ message: "Logged out successfully" });
